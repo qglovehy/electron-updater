@@ -84,7 +84,7 @@ function createWindow () {
         return;
       }
 
-      let v = { ...(versionInfo || {}) };
+      const v = { ...(versionInfo || {}) };
 
       //最新版本号
       let firNewVersion = versionInfo?.version?.split('.')?.[0]; //第一位
@@ -255,15 +255,103 @@ function createWindow () {
   });
 }
 
+//检查更新
+function checkUpdate(callback) {
+  txtConsole.log('检查更新');
+
+  http
+  .get(winUpdateConfig.updateVersionFilePath, (res) => {
+    res.on('data', (chunk) => {
+      versionInfo += chunk;
+    });
+
+    res.on('end', () => {
+      try {
+        if (versionInfo && versionInfo?.indexOf('404 Not Found') < 0) {
+          versionInfo = JSON.parse(versionInfo);
+
+          winUpdateConfig.updateFilePath = versionInfo.updateFilePath;
+
+          //热更最新信息
+          let asarVersionInfo = {
+            newVersionDesc: versionInfo.newVersionDesc,
+            currentVersion: winUpdateConfig.currentVersion,
+          };
+
+          versionInfo.currentVersion = winUpdateConfig.currentVersion;
+
+          let writeNewVersonInfo;
+
+          //不存在则创建latest文件
+          if (!fs.existsSync(winUpdateConfig.localUpdateVersionFilePath)) {
+            writeNewVersonInfo = versionInfo;
+
+            txtConsole.log('latest文件重新创建成功');
+          } else {
+            let currentVersion = fs.readFileSync(
+                winUpdateConfig.localUpdateVersionFilePath,
+                'utf8',
+            );
+
+            currentVersion = JSON.parse(currentVersion);
+
+            currentVersion['updateFilePath'] = '';
+
+            //只覆盖热更版本信息
+            writeNewVersonInfo = { ...currentVersion, ...asarVersionInfo };
+          }
+
+          //将整理好的配置文件信息写入
+          fs.writeFileSync(
+              winUpdateConfig.localUpdateVersionFilePath,
+              JSON.stringify(writeNewVersonInfo),
+          );
+
+          // txtConsole.log('已将新的更新配置文件信息写入：', JSON.stringify(writeNewVersonInfo));
+          txtConsole.log(
+              `更新检查完毕：最新版本：${versionInfo.version}, 当前版本：${asarVersionInfo.currentVersion}`,
+          );
+          txtConsole.log('-------------------------------------------------------');
+
+          callback?.(null, versionInfo);
+        } else {
+          txtConsole.log('更新配置文件读取失败');
+
+          callback?.('更新配置文件读取失败');
+        }
+      } catch (err) {
+        txtConsole.log('更新配置文件覆写失败');
+
+        callback?.('更新配置文件覆写失败');
+      }
+    });
+  })
+   .on('error', (error) => {
+    txtConsole.log(`更新配置文件下载失败: ${error.message}`);
+
+    callback?.('更新配置文件下载失败');
+  });
+}
+
+
 app.whenReady().then(() => {
   //初始化
   appInit();
 
-  createWindow()
+  //检查更新
+  checkUpdate(async (check, versionInfo = {}) => {
+    if (check) {
+      txtConsole.log('检查更新执行失败');
+    } else {
+      txtConsole.log('检查更新执行成功');
+    }
 
-  app.on('activate', function () {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
-  })
+    createWindow();
+
+    app.on('activate', function () {
+      if (BrowserWindow.getAllWindows().length === 0) createWindow()
+    })
+  });
 })
 
 app.on('window-all-closed', function () {

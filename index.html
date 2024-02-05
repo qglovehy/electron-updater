@@ -19,7 +19,7 @@
       function onCheckUpdate(){
         ipcRenderer?.send('window-version');
         ipcRenderer?.once('window-version-msg', (_,bool)=>{
-          console.log(bool)
+          document.querySelector('.updateInfo').innerHTML = JSON.stringify(bool);
         });
         ipcRenderer?.once('window-version-err-msg', (_,err)=>{
           document.querySelector('.updateInfo').innerHTML = err;

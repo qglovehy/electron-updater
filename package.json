@@ -38,7 +38,9 @@
       "!src/**/*",
       "!public/**/*",
       "index.html",
-      "main.js"
+      "main.js",
+      "mainData.js",
+      "txtConsole.js"
     ],
     "extraResources": [
       {
