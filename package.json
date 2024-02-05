@@ -5,7 +5,8 @@
   "main": "main.js",
   "scripts": {
     "start": "chcp 65001 && electron .",
-    "packager32": "electron-builder --win --ia32"
+    "packager32": "electron-builder --win --ia32",
+    "asar32": "node ./app.js"
   },
   "repository": "https://github.com/electron/electron-quick-start",
   "keywords": [
