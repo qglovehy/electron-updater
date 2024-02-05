@@ -12,6 +12,7 @@
 <button onclick="onUpdateVersion()">测试更新</button>
 
 <div class="updateInfo"></div>
+<div class="descInfo"></div>
 
 <script>
     const {ipcRenderer} = require("electron");
@@ -45,6 +46,7 @@
 
                 onVersion.isStartUpdate = true;
                 onVersion.updateDsec = updateDsec;
+                document.querySelector('.descInfo').innerHTML = updateDsec.map(item => `<span style="color:${item.active === 'success' ? 'green' : 'orangered'}">${item.desc}</span>`).join('</br>');
 
                 if (status === 'success') {
                     ipcRenderer?.send('window-restart-app');
@@ -58,7 +60,7 @@
         ipcRenderer?.on('window-download-progress-msg', (event, process) => {
             if (!event.handel) {
                 event.handel = true;
-                onVersion.process = Number(process);
+                document.querySelector('.updateInfo').innerHTML = String("完成进度：" + process + '%');
             }
         });
 

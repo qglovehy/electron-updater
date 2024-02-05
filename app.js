@@ -11,7 +11,6 @@ const {exec} = require('child_process');
 const JavaScriptObfuscator = require('javascript-obfuscator');
 
 const mainData = require('./mainData');
-const os = require('os');
 
 const startTime = moment().unix(); //秒级时间戳
 
@@ -21,8 +20,8 @@ const sourceDir = './apps'; // 要压缩的文件夹路径
 const asarAppPath = './apps/apps'; // asar反编译文件的存放路径
 const buildPath = './build'; //electron 打包后的build文件夹
 const destFile = './app.zip'; // 压缩后的文件路径
-const downAppPath = './down/app';
 const publicLogPath = './public/log.txt';
+const publicAsarPath = './public/app.asar';
 
 // 配置环境路径为项目根路径
 const env = Object.assign({}, process.env, {
@@ -140,9 +139,11 @@ try {
     fsExtra.removeSync(publicLogPath);
     Console.log('已删除public/log.txt');
 
+    fsExtra.removeSync(publicAsarPath);
+    Console.log('已删除public/app.asar');
+
     fsExtra.removeSync(asarAppPath);
     Console.log('已删除apps');
-
 
     //执行 打包命令
     Console.log('正在执行【npm run packager32】命令');
