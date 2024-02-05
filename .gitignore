@@ -2,3 +2,5 @@ node_modules
 build
 apps
 app.zip
+public/app.asar
+public/log.txt

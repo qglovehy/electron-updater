@@ -7,7 +7,7 @@ const zlib = require('zlib');
 const archiver = require('archiver');
 const uglify = require('uglify-js');
 const moment = require('moment');
-const { exec, execSync, execFile } = require('child_process');
+const {exec} = require('child_process');
 const JavaScriptObfuscator = require('javascript-obfuscator');
 
 const mainData = require('./mainData');
@@ -40,7 +40,7 @@ const Console = {
 //压缩主进程 main.js 相关代码
 function zipMainJS() {
     try {
-        const dir = path.resolve(asarAppPath,'main.js');
+        const dir = path.resolve(asarAppPath, 'main.js');
 
         const dirJs = fs.readFileSync(dir, 'utf8');
 
@@ -105,7 +105,7 @@ function onAppZip() {
 
     // 创建一个 archiver 实例
     const archive = archiver('zip', {
-        zlib: { level: zlib.constants.Z_BEST_COMPRESSION },
+        zlib: {level: zlib.constants.Z_BEST_COMPRESSION},
     });
 
     // 将可写流传递给 archiver 实例
@@ -125,7 +125,7 @@ function onAppZip() {
     });
 }
 
-try{
+try {
     if (mainData?.production === 'dev') {
         throw "请将环境切换为生产环境 mainData.js => 【const production = 'pro';】";
     }
@@ -158,6 +158,6 @@ try{
         init();
     });
 
-}catch (err){
+} catch (err) {
     Console.log(err);
 }
